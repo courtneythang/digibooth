@@ -1,15 +1,13 @@
-import { useState } from 'react'
-import './App.css'
-import Camera from './components/Camera'
+import { useState } from "react";
+import "./App.css";
+import Camera from "./components/Camera";
 
 function App() {
-
   return (
-    <div className='App'>
-      <h1>Simple Photobooth</h1>
+    <div className="App">
       <Camera />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -23,8 +23,8 @@ const Camera = () => {
       return;
     }
 
-    setCountdown(3);
-    let timeLeft = 3;
+    setCountdown(2);
+    let timeLeft = 2;
 
     const interval = setInterval(() => {
       timeLeft -= 1;
@@ -56,7 +56,7 @@ const Camera = () => {
         ctx.scale(-1, 1);
         ctx.drawImage(img, 0, 0, img.width, img.height);
 
-        const flippedImg = canvas.toDataURL("image/jpeg");
+        const flippedImg = canvas.toDataURL("image/png", 1.0);
 
         const newPhotos = [...capturedPhotos, flippedImg];
         captureNextPhoto(photoIndex + 1, newPhotos);
@@ -65,15 +65,14 @@ const Camera = () => {
   };
 
   const generatePhotoStrip = (photos) => {
-    const stripWidth = 300;
-    const stripHeight = 600;
-    const photoHeight = stripHeight / totalPhotos;
+    const stripWidth = 1920;
+    const stripHeight = 1080;
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
     canvas.width = stripWidth;
-    canvas.height = stripHeight;
+    canvas.height = stripHeight * 4;
 
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, stripWidth, stripHeight);
@@ -84,11 +83,15 @@ const Camera = () => {
       const img = new Image();
       img.src = photo;
       img.onload = () => {
-        ctx.drawImage(img, 0, index * photoHeight, stripWidth, photoHeight);
+        ctx.translate(stripWidth, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(img, 0, index * stripHeight, stripWidth, stripHeight);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+
         loadedImages++;
 
         if (loadedImages === photos.length) {
-          setPhotoStrip(canvas.toDataURL("image/jpeg"));
+          setPhotoStrip(canvas.toDataURL("image/png", 1.0));
         }
       };
     });
@@ -97,7 +100,7 @@ const Camera = () => {
   const download = () => {
     const link = document.createElement("a");
     link.href = photoStrip;
-    link.download = "photobooth.jpeg";
+    link.download = "photobooth.png";
     link.click();
   };
 
@@ -114,7 +117,7 @@ const Camera = () => {
           <Webcam
             audio={false}
             ref={webcamRef}
-            screenshotFormat="image/jpeg"
+            screenshotFormat="image/png"
             width="100%"
             videoConstraints={{
               width: 1920,
@@ -133,7 +136,8 @@ const Camera = () => {
         </>
       ) : (
         <>
-          <img src={photoStrip} alt="Captured image" width="100%" />
+          <img src={photoStrip} alt="Captured image" width="50%" />
+          <br />
           <button onClick={resetPhotos} style={{ marginTop: "10px" }}>
             Retake Photo
           </button>
