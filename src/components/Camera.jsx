@@ -110,7 +110,10 @@ const Camera = () => {
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div
+      className="delicious-handrawn-regular"
+      style={{ textAlign: "center", fontSize: "2rem" }}
+    >
       {!photoStrip ? (
         <>
           {countdown > 0 && <h2>{countdown}</h2>}
@@ -138,10 +141,10 @@ const Camera = () => {
         <>
           <img src={photoStrip} alt="Captured image" width="50%" />
           <br />
-          <button onClick={resetPhotos} style={{ marginTop: "10px" }}>
+          <button onClick={resetPhotos} style={{ margin: "10px" }}>
             Retake Photo
           </button>
-          <button onClick={download} style={{ marginTop: "10px" }}>
+          <button onClick={download} style={{ margin: "10px" }}>
             Download
           </button>
         </>
