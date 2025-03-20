@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
+import "../styles/Camera.css";
 
 const Camera = () => {
   const webcamRef = useRef(null);
@@ -7,6 +8,8 @@ const Camera = () => {
   const [countdown, setCountdown] = useState(0);
   const [isCapturing, setIsCapturing] = useState(false);
   const [photoStrip, setPhotoStrip] = useState(null);
+  const [isFlashing, setIsFlashing] = useState(false);
+
   const totalPhotos = 4;
 
   const startCapturing = () => {
@@ -18,13 +21,13 @@ const Camera = () => {
   const captureNextPhoto = (photoIndex, capturedPhotos) => {
     if (photoIndex >= totalPhotos) {
       setIsCapturing(false);
-      setPhotos(capturedPhotos);
+      setPhotos([...capturedPhotos]);
       generatePhotoStrip(capturedPhotos);
       return;
     }
 
-    setCountdown(2);
-    let timeLeft = 2;
+    setCountdown(3);
+    let timeLeft = 3;
 
     const interval = setInterval(() => {
       timeLeft -= 1;
@@ -39,6 +42,12 @@ const Camera = () => {
 
   const capturePhoto = (photoIndex, capturedPhotos) => {
     if (webcamRef.current) {
+      setIsFlashing(true);
+
+      setTimeout(() => {
+        setIsFlashing(false);
+      }, 300);
+
       const imageSrc = webcamRef.current.getScreenshot();
       if (!imageSrc) return;
 
@@ -59,7 +68,9 @@ const Camera = () => {
         const flippedImg = canvas.toDataURL("image/png", 1.0);
 
         const newPhotos = [...capturedPhotos, flippedImg];
-        captureNextPhoto(photoIndex + 1, newPhotos);
+        setTimeout(() => {
+          captureNextPhoto(photoIndex + 1, newPhotos);
+        }, 1000);
       };
     }
   };
@@ -116,19 +127,22 @@ const Camera = () => {
     >
       {!photoStrip ? (
         <>
-          {countdown > 0 && <h2>{countdown}</h2>}
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/png"
-            width="100%"
-            videoConstraints={{
-              width: 1920,
-              height: 1080,
-              facingMode: "user",
-            }}
-            mirrored={true}
-          />
+          {isCapturing && <h2>{countdown}</h2>}
+          <div className="camera-container">
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/png"
+              width="100%"
+              className={`camera ${isFlashing ? "flash" : ""}`}
+              videoConstraints={{
+                width: window.innerWidth,
+                height: window.innerWidth * (9 / 16),
+                facingMode: "user",
+              }}
+              mirrored={true}
+            />
+          </div>
           <button
             onClick={startCapturing}
             style={{ marginTop: "10px" }}
